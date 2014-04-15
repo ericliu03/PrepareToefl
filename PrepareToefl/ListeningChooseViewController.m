@@ -65,7 +65,7 @@
     }
     [listeningFileArray removeObjectsAtIndexes:indexSet];
     
-    NSLog([listeningFileArray description]);
+    //NSLog([listeningFileArray description]);
 }
 
 #pragma mark - Table view data source

@@ -13,6 +13,7 @@
     BOOL isPlaying;
     NSURL *listeningFile;
     AVAudioPlayer *player;
+    NSThread *disTimeReplayThread;
 }
 
 @end
@@ -99,14 +100,15 @@
 }
 
 - (IBAction)progressBarValueChanged:(id)sender {
-    [player stop];
-    player.currentTime = self.progressBar.value * player.duration;
-    [player play];
+    player.currentTime = self.progressBar.value * player.duration - 1;
+    [self refreshTimeForMainThreadForPlay];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
     [self.StartButton setTitle:@"Play" forState:UIControlStateNormal];
+    [self.progressBar setValue:0];
+    [self refreshTimeForMainThreadForPlay];
 }
 
 -(void)displayTimeForPlay{
@@ -114,7 +116,7 @@
     //进度条归零
     [self.progressBar setValue:0];
     
-    NSThread *disTimeReplayThread = [[NSThread alloc] initWithTarget:self selector:@selector(refreshTimeForPlay) object:nil];
+    disTimeReplayThread = [[NSThread alloc] initWithTarget:self selector:@selector(refreshTimeForPlay) object:nil];
     [disTimeReplayThread setName:@"displayPlayTimeThread"];
     [disTimeReplayThread start];
 }
@@ -125,6 +127,9 @@
         if ([player isPlaying]) {
             [self performSelectorOnMainThread:@selector(refreshTimeForMainThreadForPlay) withObject:nil waitUntilDone:YES];
         }
+        if ([[NSThread currentThread]isCancelled]){
+            [NSThread exit];
+        }
     }
 }
 -(void)refreshTimeForMainThreadForPlay{
@@ -134,10 +139,22 @@
                             lround(floor(player.currentTime / 60.)) % 60,
                             lround(floor(player.currentTime)) % 60];
     self.timePlayedLabel.text = currentTimeString;
+    //同步播放进度条
     [self.progressBar setValue:(player.currentTime/player.duration)];
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
     [player stop];
+    [disTimeReplayThread cancel];
+    
+}
+
+- (IBAction)touchDown:(id)sender {
+    [player pause];
+}
+
+- (IBAction)touchCancel:(id)sender {
+    [player play];
+    [self.StartButton setTitle:@"Pause" forState:UIControlStateNormal];
 }
 @end

@@ -60,6 +60,7 @@
     return indexPath;
 }
 
+#pragma mark -Naviagtion
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     if ([segue.identifier isEqualToString:@"InfoPutIn"]) {
         
@@ -70,19 +71,13 @@
     }
     else if ([segue.identifier isEqualToString:@"GoCheck"]){
         
-        UINavigationController *navigationController = segue.destinationViewController;
-        GoCheckViewController *controller = (GoCheckViewController*) navigationController.topViewController;
+        GoCheckViewController *controller = (GoCheckViewController*) segue.destinationViewController;
         controller.userInfo = self.dataModel.users[0];
-        controller.delegate = self;
     }
     
 }
 
--(void)InfoPutInViewControllerDidCancel:(InfoPutInViewController*)controller{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
-
+#pragma mark - delegate
 
 -(void)InfoPutInViewController:(InfoPutInViewController*)controller DidDone:(UserInfo*)UserInfo{
     //NSLog([NSString stringWithFormat:@"%d",[self.dataModel.users count]]);
@@ -95,8 +90,5 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
--(void)GoCheckViewControllerDidCancel:(InfoPutInViewController*)controller{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
 
 @end

@@ -19,7 +19,7 @@
     BOOL goingFlag;
     BOOL goingFlagForSendButton;
 }
-
+#pragma mark - inits
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -27,6 +27,10 @@
         // Custom initialization
     }
     return self;
+}
+
+-(void)viewTapped:(UITapGestureRecognizer*)tapGr{
+    [self.codeInputFeild resignFirstResponder];
 }
 
 - (void)viewDidLoad
@@ -48,16 +52,10 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)viewTapped:(UITapGestureRecognizer*)tapGr{
-    [self.codeInputFeild resignFirstResponder];
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField*)textField{
-    [self.codeInputFeild resignFirstResponder];
-    return YES;
-}
 
 
+
+#pragma mark - CodeUrl
 - (NSString*)getIdentifyCodeUrl1{
     NSDate *datenow = [NSDate date];
     double timeStemp = [datenow timeIntervalSince1970];
@@ -79,18 +77,60 @@
     return codeUrl;
 }
 
--(BOOL) checkIsSeatAvailable{
+#pragma mark - deal with the contents
+
+
+
+-(void) checkIsIDAndPassCorrect{
+    
+    NSString *matchString = [NSString stringWithFormat:@"NEEAID or password incorrect"];
+    NSError *error;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:matchString options:0 error:&error];
+    //NSLog(simulateLogin.dataInString);
+    NSTextCheckingResult *firstMatch = [regex firstMatchInString:simulateLogin.dataInString options:0 range:NSMakeRange(0, [simulateLogin.dataInString length])];
+    if (firstMatch) {
+        [self refreshStatesTextField:@"ID or Password incorrect."];
+        [NSThread exit];
+        
+    }
+    else {
+       
+    }
+}
+
+
+-(BOOL) checkIsVerifyCodeCorrect{
+    NSString *matchString = [NSString stringWithFormat:@"stop16.gif"];
+    NSError *error;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:matchString options:0 error:&error];
+    NSTextCheckingResult *firstMatch = [regex firstMatchInString:simulateLogin.dataInString options:0 range:NSMakeRange(0, [simulateLogin.dataInString length])];
+    if (firstMatch) {
+        [self refreshStatesTextField:@"VerifyCode incorrect, please try again"];
+        return YES;
+    }
+    else {
+        return NO;
+        
+    }
+}
+
+
+-(void) checkIsSeatAvailable{
     NSString *matchString = [NSString stringWithFormat:@"Seat available"];
     NSError *error;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:matchString options:0 error:&error];
     NSTextCheckingResult *firstMatch = [regex firstMatchInString:simulateLogin.dataInString options:0 range:NSMakeRange(0, [simulateLogin.dataInString length])];
     if (firstMatch) {
-        return YES;
+        [self refreshStatesTextField:@"We have seats"];
     }
-    else return NO;
+    else {
+        [self refreshStatesTextField:@"Sorry, we do not have an seat"];
+    }
 }
 
+#pragma mark - Buttons
 - (IBAction)sendIdentifyCode:(id)sender {
+    [self refreshStatesTextField:@"code received"];
     goingFlagForSendButton = YES;
 }
 
@@ -106,28 +146,35 @@
     [connectThread start];
 }
 
--(void)setImageOfCode{
-    
+- (IBAction)stopButton:(id)sender {
+   [connectThread cancel];
+}
+
+#pragma mark - refresh the view
+-(void)setCodeImage{
+    [self performSelectorOnMainThread:@selector(textFieldBecomeResponser) withObject:nil waitUntilDone:NO];
     self.identifyCodeImage.image = [UIImage imageWithData: simulateLogin.receivedData];
+    [NSThread exit];
 
 }
 -(void)setCodeImageInNewThread{
-    NSThread *setImageThread = [[NSThread alloc] initWithTarget:self selector:@selector(setImageOfCode) object:nil];
+    NSThread *setImageThread = [[NSThread alloc] initWithTarget:self selector:@selector(setCodeImage) object:nil];
     [setImageThread setName:@"setImageThread"];
     [setImageThread start];
-    //turn the keyboard on after set the image
-    [self performSelectorOnMainThread:@selector(textFieldBecomeResponser) withObject:nil waitUntilDone:NO];
+}
+
+-(void)textFieldBecomeResponser{
+    [self.codeInputFeild becomeFirstResponder];
 }
 
 -(NSString*)getPresentTime{
-    
     NSDate *now = [NSDate date];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
     [dateFormatter setDateFormat:@"yy-MM-dd hh:mm:ss"];
     NSString *strDate = [dateFormatter stringFromDate:now];
-    //[dateFormatter release];
     return strDate;
 }
+
 -(void)refreshStatesTextField:(NSString*)stringToAppend{
     [self performSelectorOnMainThread:@selector(refreshStatesTextFieldInMainThread:) withObject:stringToAppend waitUntilDone:NO];
 }
@@ -137,24 +184,41 @@
     NSString *time = [self getPresentTime];
     self.statesTextFeild.text = [NSString stringWithFormat:@"%@ %@\n%@", time, stringToAppend, self.statesTextFeild.text];
 }
+
+
+#pragma mark - waits
+-(void)checkIfThreadTerminated{
+    if ([[NSThread currentThread] isCancelled]) {
+        [self refreshStatesTextField:@"Check process terminated, press start to start over."];
+        [NSThread exit];
+    }
+    else{
+        [NSThread sleepForTimeInterval:0.1];
+    }
+}
+//在wait函数中检测线程是否被终止
 -(void)waitForGoingFlag{
-    while (!goingFlag);
+    while (!goingFlag)[self checkIfThreadTerminated];
     goingFlag = NO;
 }
 
--(void)textFieldBecomeResponser{
-    [self.codeInputFeild becomeFirstResponder];
-}
-
 -(void)waitForGoingFlagForSendButton{
-    
-    while (!goingFlagForSendButton);
+    //turn the keyboard on before waiting for send code
+    //[self performSelectorOnMainThread:@selector(textFieldBecomeResponser) withObject:nil waitUntilDone:NO];
+    while (!goingFlagForSendButton)[self checkIfThreadTerminated];
     goingFlagForSendButton = NO;
 }
--(void)waitForseconds:(int)sec{
+
+-(void)waitForSeconds:(int)sec{
     [self refreshStatesTextField:[NSString stringWithFormat:@"wait the website for %d seconds",sec]];
+    //check every 0.1 sec
+    for (int i = 0; i < sec * 10; i ++) {
+        [self checkIfThreadTerminated];
+    }
     [NSThread sleepForTimeInterval:sec];
 }
+
+#pragma mark - the http request and delegate
 -(void) runThread{
     headers = nil;
     NSString *mainUrl = @"http://toefl.etest.net.cn/en";
@@ -168,74 +232,78 @@
     simulateLogin = [[SimulateLogin alloc]init];
     simulateLogin.delegate = self;
     
-    
-    NSLog(@"step1 get cookie and code");
-    [self refreshStatesTextField:@"step1 get cookie and code"];
-    [simulateLogin requestToURLWithGet:(NSString*)mainUrl withHeaders:(NSDictionary*)headers];
-    [self waitForGoingFlag];
-    //get the code with a thread
-    [simulateLogin requestToURLWithGet:[self getIdentifyCodeUrl1] withHeaders:(NSDictionary*)headers];
-    [self waitForGoingFlag];
-    [self setCodeImageInNewThread];
-    
-    
-    NSLog(@"step2 input code and login");
-    [self refreshStatesTextField:@"step2 input code and login"];
-    //------wait for the send button pushed------
-    
-    [self waitForseconds:5];
-    [self waitForGoingFlagForSendButton];
-    NSString *code1 = self.codeInputFeild.text;
-    //-------post the id and password-------------
-    postBodyForLogin =[NSString stringWithFormat:@"username=%@&__act=__id.24.TOEFLAPP.appadp.actLogin&password=%@&LoginCode=%@&submit.x=22&submit.y=7",self.userInfo.neeaid, self.userInfo.password, code1];
-    [simulateLogin requestToURLWithPost:loginUrl withHeaders:headers inMethod:@"POST" withHttpBody:postBodyForLogin];
-    [self waitForGoingFlag];
-    //NSLog(simulateLogin.dataInString);
+    do {
+        //---------------- 1 -----------------
+        [self refreshStatesTextField:@"step1 get cookie and code"];
+        [simulateLogin requestToURLWithGet:(NSString*)mainUrl withHeaders:(NSDictionary*)headers];
+        [self waitForGoingFlag];
+        //get the code and display it in another thread
+        [simulateLogin requestToURLWithGet:[self getIdentifyCodeUrl1] withHeaders:(NSDictionary*)headers];
+        [self waitForGoingFlag];
+        [self setCodeImageInNewThread];
     
     
-    NSLog(@"step3 get the code for check seat");
-    [self refreshStatesTextField:@"step3 get the code for check seat"];
-    [self waitForseconds:5];
-    [simulateLogin requestToURLWithGet:seatUrl withHeaders:(NSDictionary*)headers];
-    [self waitForGoingFlag];
-    //NSLog(@"%@",simulateLogin.dataInString);
-    //get the code2
-    [simulateLogin requestToURLWithGet:[self getIdentifyCodeUrl2] withHeaders:(NSDictionary*)headers];
-    [self waitForGoingFlag];
-    [self setCodeImageInNewThread];
+        //---------------- 2 -----------------
+        [self refreshStatesTextField:@"step2 input code and login"];
+        //------wait for the send button pushed------
     
-    NSLog(@"step4 check seat");
-    [self refreshStatesTextField:@"step4 check seat"];
-    [self waitForseconds:5];
-    [self waitForGoingFlagForSendButton];
-    NSString *code2 = self.codeInputFeild.text;
-    checkUrl = [NSString stringWithFormat:@"http://toefl.etest.net.cn/en/SeatsQuery?__act=__id.22.SeatsQuery.adp.actList&whichFirst=AS&mvfAdminMonths=%@&mvfSiteProvinces=%@&afCalcResult=%@", self.userInfo.date, self.userInfo.province, code2];
-    [simulateLogin requestToURLWithGet:checkUrl withHeaders:(NSDictionary*)headers];
-    [self waitForGoingFlag];
-    //NSLog(simulateLogin.dataInString);
-    if ([self checkIsSeatAvailable]) {
-        NSLog(@"yes");
-        [self refreshStatesTextField:@"We have seats"];
-    }else {
-        
-        NSLog(@"NO");
-        [self refreshStatesTextField:@"Sorry, we do not have an seat"];
-    }
-    NSLog(@"finished");
-    [self refreshStatesTextField:@"Check process finished"];
+    
+        [self waitForSeconds:5];
+        [self waitForGoingFlagForSendButton];
+        NSString *code1 = self.codeInputFeild.text;
+        //post the id and password
+        postBodyForLogin = [NSString stringWithFormat:@"username=%@&__act=__id.24.TOEFLAPP.appadp.actLogin&password=%@&LoginCode=%@&submit.x=22&submit.y=7",self.userInfo.neeaid, self.userInfo.password, code1];
+        [simulateLogin requestToURLWithPost:loginUrl
+                                withHeaders:headers
+                                   inMethod:@"POST"
+                               withHttpBody:postBodyForLogin];
+        [self waitForGoingFlag];
+        NSLog(@"post iDID------------------------------------");
+        [self checkIsIDAndPassCorrect];
+    }while ([self checkIsVerifyCodeCorrect]);
+
+    [self refreshStatesTextField:@"Login success"];
+   
+    do {
+        //---------------- 3 -----------------
+        [self refreshStatesTextField:@"step3 get the code for check seat"];
+        [self waitForSeconds:5];
+        [simulateLogin requestToURLWithGet:seatUrl withHeaders:(NSDictionary*)headers];
+        [self waitForGoingFlag];
+        //get the code2
+        [simulateLogin requestToURLWithGet:[self getIdentifyCodeUrl2] withHeaders:(NSDictionary*)headers];
+        [self waitForGoingFlag];
+        [self setCodeImageInNewThread];
+    
+    
+        //---------------- 4 -----------------
+        [self refreshStatesTextField:@"step4 check seat"];
+        [self waitForSeconds:5];
+        [self waitForGoingFlagForSendButton];
+        NSString *code2 = self.codeInputFeild.text;
+        checkUrl = [NSString stringWithFormat:@"http://toefl.etest.net.cn/en/SeatsQuery?__act=__id.22.SeatsQuery.adp.actList&whichFirst=AS&mvfAdminMonths=%@&mvfSiteProvinces=%@&afCalcResult=%@", self.userInfo.date, self.userInfo.province, code2];
+        [simulateLogin requestToURLWithGet:checkUrl withHeaders:(NSDictionary*)headers];
+        [self waitForGoingFlag];
+    }while ([self checkIsVerifyCodeCorrect]);
+    
+    
+    [self checkIsSeatAvailable];
     
 
     
 }
 
--(void)didFinished:(SimulateLogin*)controller{
+-(void)didFinishLoading:(SimulateLogin*)controller{
     goingFlag = YES;
-    NSLog(@"didfinished");
     headers = simulateLogin.responseInDic;
     //NSLog([simulateLogin.responseInDic descriptionInStringsFileFormat]);
     //NSLog(simulateLogin.dataInString);
+    //NSLog(@"----------------------------------------------------------------------------");
 }
-- (IBAction)Cancel:(id)sender {
-    [self.delegate GoCheckViewControllerDidCancel:self];
+
+-(void)findWebsiteBusy:(SimulateLogin *)controller{
+    [self refreshStatesTextField:@"Website busy"];
+    [self waitForSeconds:3];//aim for check whether the user stopped
 }
+
 @end

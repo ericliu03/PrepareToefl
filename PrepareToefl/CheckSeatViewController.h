@@ -20,7 +20,7 @@
 
 @end
 
-@interface CheckSeatViewController : UITableViewController<InfoPutInViewControllerDelegate, GoCheckViewControllerDelegate>
+@interface CheckSeatViewController : UITableViewController<InfoPutInViewControllerDelegate>
 
 - (IBAction)Cancel:(id)sender;
 

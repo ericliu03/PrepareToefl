@@ -18,6 +18,8 @@
 - (IBAction)progressBarValueChanged:(id)sender;
 @property (weak, nonatomic) IBOutlet UILabel *timePlayedLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeAllLabel;
+- (IBAction)touchDown:(id)sender;
+- (IBAction)touchCancel:(id)sender;
 
 @property (nonatomic, weak) NSString *fileName;
 @end

@@ -9,9 +9,22 @@
 #import "SimulateLogin.h"
 
 @implementation SimulateLogin{
-
-    NSURLResponse *_response;
 }
+
+-(BOOL) checkIsWebsiteBusy{
+    NSString *matchString = [NSString stringWithFormat:@"F5"];
+    NSError *error;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:matchString options:0 error:&error];
+    NSTextCheckingResult *firstMatch = [regex firstMatchInString:self.dataInString options:0 range:NSMakeRange(0, [self.dataInString length])];
+    if (firstMatch) {
+        [self.delegate findWebsiteBusy:self];
+        return YES;//YES means it is busy, so we keep on looping
+    }
+    else {
+        return NO;
+    }
+}
+
 -(void)requestToURLWithGet:(NSString*)urlString withHeaders:(NSDictionary*)headers{
 
     NSURL *url=[[NSURL alloc]initWithString:urlString];
@@ -28,17 +41,21 @@
 
 
     NSHTTPURLResponse *response;
-    NSData *returnData = [NSURLConnection sendSynchronousRequest:request
-                                               returningResponse:&response error:nil];
-    //返回的数据处理
-    self.receivedData = returnData;
-    self.dataInString =[[NSString alloc] initWithData:returnData encoding:NSASCIIStringEncoding];
-    //NSLog(@"%@",self.dataInString);
-
+    NSData *returnData;
+    
+    do {
+        returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+        //返回的数据处理
+        
+        self.dataInString =[[NSString alloc] initWithData:returnData encoding:NSASCIIStringEncoding];
+        //NSLog(@"%@",self.dataInString);
+    }while ([self checkIsWebsiteBusy]);
+    
     NSDictionary *fields = [response allHeaderFields];
     self.responseInDic = fields;
+    self.receivedData = returnData;
 
-    [self.delegate didFinished:self];
+    [self.delegate didFinishLoading:self];
 }
 
 
@@ -48,7 +65,6 @@
     NSData *postData = [httpBody dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
     NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
 
-    //NSString *urlString1 = @"http://toefl.etest.net.cn/en";
     NSURL *url=[[NSURL alloc]initWithString:urlString];
     NSMutableURLRequest  *request=[NSMutableURLRequest requestWithURL:url];
     
@@ -62,57 +78,19 @@
     [request setValue:[headers objectForKey:@"Set-Cookie"] forHTTPHeaderField:@"Cookie"];
 
     NSHTTPURLResponse *response;
-    NSData *returnData = [NSURLConnection sendSynchronousRequest:request
-                                               returningResponse:&response error:nil];
-    //返回的数据处理
-    self.receivedData = returnData;
-    self.dataInString =[[NSString alloc] initWithData:returnData encoding:NSUTF8StringEncoding];
-    
+    NSData *returnData;
+    do {
+        returnData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+        //返回的数据处理
+        self.receivedData = returnData;
+        self.dataInString =[[NSString alloc] initWithData:returnData encoding:NSASCIIStringEncoding];
+    }while ([self checkIsWebsiteBusy]);
     
     NSDictionary *fields = [response allHeaderFields];
     self.responseInDic = fields;
     
-    [self.delegate didFinished:self];
+    [self.delegate didFinishLoading:self];
 }
-    
-//- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-//{
-//    _response = response;
-//    NSLog(@"get the whole response");
-//    NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *)_response;
-//    NSDictionary *fields = [HTTPResponse allHeaderFields];
-//    self.responseInDic = fields;
-//    //NSLog(@"%@",[fields description]);
-//    [self.receivedData setLength:0];
-//}
-//    
-//    
-//- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-//    
-//{
-//    NSLog(@"get some data");
-//    [self.receivedData appendData:data];
-//}
-//    
-//    
-//    
-//- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-//{
-//    NSLog(@"Finished!!!");
-//    self.dataInString = [[NSString alloc] initWithData:self.receivedData encoding:NSASCIIStringEncoding];
-//    [self.delegate didFinished:self];
-//}
-//    
-//    
-//    
-//    
-//-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-//{
-//    NSLog(@"Connection failed! Error - %@",
-//          [error localizedDescription]
-//        //,[[error userInfo] objectForKey:NSErrorFailingURLStringKey]
-//        );
-//}
 
     
 

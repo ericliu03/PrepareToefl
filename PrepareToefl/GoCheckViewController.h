@@ -12,26 +12,21 @@
 
 @class GoCheckViewController;
 
-@protocol GoCheckViewControllerDelegate <NSObject>
-
--(void)GoCheckViewControllerDidCancel:(GoCheckViewController*)controller;
-
-@end
 
 @interface GoCheckViewController : UITableViewController <SimulateLoginDelegate, UITextFieldDelegate>
 
-@property(nonatomic,weak) id <GoCheckViewControllerDelegate> delegate;
+@property (strong, nonatomic) UserInfo *userInfo;
 
+#pragma mark interface
 @property (weak, nonatomic) IBOutlet UIImageView *identifyCodeImage;
 @property (weak, nonatomic) IBOutlet UITextView *statesTextFeild;
 @property (weak, nonatomic) IBOutlet UITextField *codeInputFeild;
-@property (strong, nonatomic) UserInfo *userInfo;
 
 - (IBAction)sendIdentifyCode:(id)sender;
-
 - (IBAction)beginButton:(id)sender;
+- (IBAction)stopButton:(id)sender;
 
-- (IBAction)Cancel:(id)sender;
+
 
 
 @end

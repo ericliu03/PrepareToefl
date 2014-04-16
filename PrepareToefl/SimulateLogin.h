@@ -11,8 +11,8 @@
 
 @protocol SimulateLoginDelegate <NSObject>
 
--(void)didFinished:(SimulateLogin*)controller;
-
+-(void)didFinishLoading:(SimulateLogin*)controller;
+-(void)findWebsiteBusy:(SimulateLogin*)controller;
 @end
 
 @interface SimulateLogin : NSObject
@@ -21,7 +21,7 @@
 -(void)requestToURLWithPost:(NSString*)urlString withHeaders:(NSDictionary*)headers inMethod:(NSString*)httpMethod withHttpBody:(NSString*)httpBody;
 
 
-@property(nonatomic, strong) NSString *dataInString;
+@property(nonatomic, retain) NSString *dataInString;
 @property(nonatomic, strong) NSDictionary *responseInDic;
 @property(nonatomic, strong) NSData *receivedData;
 @property(nonatomic, strong) id <SimulateLoginDelegate> delegate;

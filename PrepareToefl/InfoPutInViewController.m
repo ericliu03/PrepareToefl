@@ -45,9 +45,6 @@
 }
 
 
-- (IBAction)Cancel:(id)sender {
-    [self.delegate InfoPutInViewControllerDidCancel:self];
-}
 //按next键到下一行
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField{
@@ -62,6 +59,7 @@
     }
     return YES;
 }
+
 - (IBAction)Done:(id)sender {
     UserInfo *userInfo = [[UserInfo alloc]init];
     

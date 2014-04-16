@@ -13,7 +13,6 @@
 
 @protocol InfoPutInViewControllerDelegate <NSObject>
 
--(void)InfoPutInViewControllerDidCancel:(InfoPutInViewController*)controller;
 -(void)InfoPutInViewController:(InfoPutInViewController*)controller DidDone:(UserInfo*)userInfo;
 
 @end
@@ -27,7 +26,6 @@
 @property (weak, nonatomic) IBOutlet UITextField *textFieldDate;
 @property (weak, nonatomic) IBOutlet UITextField *textFieldProvince;
 @property (strong, nonatomic) UserInfo *UserInfoToEdit;
-- (IBAction)Cancel:(id)sender;
 - (IBAction)Done:(id)sender;
 
 @end

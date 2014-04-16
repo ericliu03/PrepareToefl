@@ -124,6 +124,53 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A2446B3C18FE686600FF097E /* CheckSeat */ = {
+			isa = PBXGroup;
+			children = (
+				A29F748118E950AF00278806 /* CheckSeatViewController.h */,
+				A29F748218E950AF00278806 /* CheckSeatViewController.m */,
+				A29F748418E97FD300278806 /* InfoPutInViewController.h */,
+				A29F748518E97FD300278806 /* InfoPutInViewController.m */,
+				A2C7125218EEB7860056887D /* GoCheckViewController.h */,
+				A2C7125318EEB7860056887D /* GoCheckViewController.m */,
+				A2A0A12718EEF861006B4548 /* SimulateLogin.h */,
+				A2A0A12818EEF861006B4548 /* SimulateLogin.m */,
+			);
+			name = CheckSeat;
+			sourceTree = "<group>";
+		};
+		A2446B3D18FE687A00FF097E /* Prepare */ = {
+			isa = PBXGroup;
+			children = (
+				A2A1312B18F8E1CA00134F20 /* PrepareViewController.h */,
+				A2A1312C18F8E1CA00134F20 /* PrepareViewController.m */,
+				A2A27DBF18F968C1009230CD /* SpeakingChooseTableViewController.h */,
+				A2A27DC018F968C1009230CD /* SpeakingChooseTableViewController.m */,
+				A243227A18FB927700000FD9 /* QuestionAddViewController.h */,
+				A243227B18FB927700000FD9 /* QuestionAddViewController.m */,
+				A2A27DC218F968E7009230CD /* SpeakingViewController.h */,
+				A2A27DC318F968E7009230CD /* SpeakingViewController.m */,
+				A27E793D18FCD1D8007695DB /* ListeningChooseViewController.h */,
+				A27E793E18FCD1D8007695DB /* ListeningChooseViewController.m */,
+				A27E794018FCE092007695DB /* ListeningViewController.h */,
+				A27E794118FCE092007695DB /* ListeningViewController.m */,
+			);
+			name = Prepare;
+			sourceTree = "<group>";
+		};
+		A2446B3E18FE68A500FF097E /* DataModel */ = {
+			isa = PBXGroup;
+			children = (
+				A29F748A18EAA19100278806 /* DataModel.h */,
+				A29F748B18EAA19100278806 /* DataModel.m */,
+				A29F748718E9AA4100278806 /* UserInfo.h */,
+				A29F748818E9AA4100278806 /* UserInfo.m */,
+				A2A27DC518F96A28009230CD /* Questions.h */,
+				A2A27DC618F96A28009230CD /* Questions.m */,
+			);
+			name = DataModel;
+			sourceTree = "<group>";
+		};
 		A29F743A18E93A4B00278806 = {
 			isa = PBXGroup;
 			children = (
@@ -161,37 +208,14 @@
 			children = (
 				A29F745518E93A4C00278806 /* PrepareToeflAppDelegate.h */,
 				A29F745618E93A4C00278806 /* PrepareToeflAppDelegate.m */,
-				A29F745818E93A4C00278806 /* Main.storyboard */,
 				A29F745B18E93A4C00278806 /* PrepareToeflViewController.h */,
 				A29F745C18E93A4C00278806 /* PrepareToeflViewController.m */,
+				A29F745818E93A4C00278806 /* Main.storyboard */,
 				A29F745E18E93A4C00278806 /* Images.xcassets */,
+				A2446B3E18FE68A500FF097E /* DataModel */,
+				A2446B3C18FE686600FF097E /* CheckSeat */,
+				A2446B3D18FE687A00FF097E /* Prepare */,
 				A29F744D18E93A4C00278806 /* Supporting Files */,
-				A29F748118E950AF00278806 /* CheckSeatViewController.h */,
-				A29F748218E950AF00278806 /* CheckSeatViewController.m */,
-				A29F748418E97FD300278806 /* InfoPutInViewController.h */,
-				A29F748518E97FD300278806 /* InfoPutInViewController.m */,
-				A2C7125218EEB7860056887D /* GoCheckViewController.h */,
-				A2C7125318EEB7860056887D /* GoCheckViewController.m */,
-				A2A0A12718EEF861006B4548 /* SimulateLogin.h */,
-				A2A0A12818EEF861006B4548 /* SimulateLogin.m */,
-				A29F748A18EAA19100278806 /* DataModel.h */,
-				A29F748B18EAA19100278806 /* DataModel.m */,
-				A29F748718E9AA4100278806 /* UserInfo.h */,
-				A29F748818E9AA4100278806 /* UserInfo.m */,
-				A2A27DC518F96A28009230CD /* Questions.h */,
-				A2A27DC618F96A28009230CD /* Questions.m */,
-				A2A1312B18F8E1CA00134F20 /* PrepareViewController.h */,
-				A2A1312C18F8E1CA00134F20 /* PrepareViewController.m */,
-				A2A27DBF18F968C1009230CD /* SpeakingChooseTableViewController.h */,
-				A2A27DC018F968C1009230CD /* SpeakingChooseTableViewController.m */,
-				A243227A18FB927700000FD9 /* QuestionAddViewController.h */,
-				A243227B18FB927700000FD9 /* QuestionAddViewController.m */,
-				A2A27DC218F968E7009230CD /* SpeakingViewController.h */,
-				A2A27DC318F968E7009230CD /* SpeakingViewController.m */,
-				A27E793D18FCD1D8007695DB /* ListeningChooseViewController.h */,
-				A27E793E18FCD1D8007695DB /* ListeningChooseViewController.m */,
-				A27E794018FCE092007695DB /* ListeningViewController.h */,
-				A27E794118FCE092007695DB /* ListeningViewController.m */,
 			);
 			path = PrepareToefl;
 			sourceTree = "<group>";

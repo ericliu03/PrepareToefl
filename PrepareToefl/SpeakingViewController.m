@@ -163,7 +163,7 @@
     }
 }
 -(void)refreshTimeForMainThreadForReplay{
-    self.timeForReplay.text = [NSString stringWithFormat:@"%d", (int)player.currentTime];
+    self.timeForReplay.text = [NSString stringWithFormat:@"%0.1f", (float)player.currentTime];
 }
 
 
@@ -183,7 +183,7 @@
     }
 }
 -(void)refreshTimeForMainThreadForRecord{
-    self.timeForRecord.text = [NSString stringWithFormat:@"%d", (int)recorder.currentTime];
+    self.timeForRecord.text = [NSString stringWithFormat:@"%0.1f", (float)recorder.currentTime];
 }
     
 

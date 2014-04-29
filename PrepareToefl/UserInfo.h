@@ -11,7 +11,7 @@
 @interface UserInfo : NSObject <NSCoding>
 @property(nonatomic, copy) NSString *neeaid;
 @property(nonatomic, copy) NSString *password;
-@property(nonatomic, copy) NSString *date;
-@property(nonatomic, copy) NSString *province;
+@property(nonatomic, copy) NSArray *date;
+@property(nonatomic, copy) NSArray *province;
 
 @end

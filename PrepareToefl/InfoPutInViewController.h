@@ -23,8 +23,12 @@
 
 @property (weak, nonatomic) IBOutlet UITextField *textFieldID;
 @property (weak, nonatomic) IBOutlet UITextField *textFieldPassword;
-@property (weak, nonatomic) IBOutlet UITextField *textFieldDate;
-@property (weak, nonatomic) IBOutlet UITextField *textFieldProvince;
+@property (weak, nonatomic) IBOutlet UITextField *textFieldDate1;
+@property (weak, nonatomic) IBOutlet UITextField *textFieldDate2;
+@property (weak, nonatomic) IBOutlet UITextField *textFieldDate3;
+@property (weak, nonatomic) IBOutlet UITextField *textFieldProvince1;
+@property (weak, nonatomic) IBOutlet UITextField *textFieldProvince2;
+@property (weak, nonatomic) IBOutlet UITextField *textFieldProvince3;
 @property (strong, nonatomic) UserInfo *UserInfoToEdit;
 - (IBAction)Done:(id)sender;
 

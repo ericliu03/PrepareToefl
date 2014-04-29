@@ -31,8 +31,9 @@
 
     UserInfo *user1 = self.dataModel.users[0];
 
-    NSString *displayText = [NSString stringWithFormat:@" ID:%@ \n Password:%@ \n Date:%@ \n Province:%@", user1.neeaid, user1.password, user1.date, user1.province];
-    self.TextViewUserInfo.text = displayText;
+    [self displayUserInfo:user1];
+//    NSString *displayText = [NSString stringWithFormat:@" ID:%@ \n Password:%@ \n Date:%@ \n Province:%@", user1.neeaid, user1.password, user1.date, user1.province];
+//    self.TextViewUserInfo.text = displayText;
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -79,14 +80,33 @@
 
 #pragma mark - delegate
 
+-(void)displayUserInfo:(UserInfo*)UserInfo{
+    NSMutableString *dateToDisplay = [[NSMutableString alloc]init];
+    NSMutableString *provinceToDisplay = [[NSMutableString alloc]init];
+    
+    for (NSString *date in UserInfo.date) {
+        if (![date isEqualToString:@""]) {
+            [dateToDisplay appendString:[NSString stringWithFormat:@"%@.", date]];
+        }
+    }
+    
+    for (NSString *province in UserInfo.province) {
+        if (![province isEqualToString:@""]) {
+            [provinceToDisplay appendString:[NSString stringWithFormat:@"%@.", province]];
+        }
+    }
+    
+    NSString *displayText = [NSString stringWithFormat:@" ID:%@ \n Password:%@ \n Date:%@ \n Province:%@", UserInfo.neeaid, UserInfo.password, dateToDisplay , provinceToDisplay];
+    self.TextViewUserInfo.text = displayText;
+}
+
 -(void)InfoPutInViewController:(InfoPutInViewController*)controller DidDone:(UserInfo*)UserInfo{
     //NSLog([NSString stringWithFormat:@"%d",[self.dataModel.users count]]);
     [self.dataModel.users replaceObjectAtIndex:0 withObject:UserInfo];
     //NSLog([NSString stringWithFormat:@"%d",[self.dataModel.users count]]);
     [self.dataModel saveUserInfo];
     //读取传送来的userInfo来填入文本框
-    NSString *displayText = [NSString stringWithFormat:@" ID:%@ \n Password:%@ \n Date:%@ \n Province:%@", UserInfo.neeaid, UserInfo.password, UserInfo.date, UserInfo.province];
-    self.TextViewUserInfo.text = displayText;
+    [self displayUserInfo:UserInfo];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

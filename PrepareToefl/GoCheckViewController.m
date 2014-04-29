@@ -224,7 +224,7 @@
     NSString *mainUrl = @"http://toefl.etest.net.cn/en";
     NSString *loginUrl = @"http://toefl.etest.net.cn/en/TOEFLAPP";
     NSString *seatUrl = [NSString stringWithFormat:@"http://toefl.etest.net.cn/en/Information?page=SeatsQuery"];
-    NSString *checkUrl;
+    NSMutableString *checkUrl;
     NSString *postBodyForLogin;
     
     
@@ -281,11 +281,23 @@
         [self waitForSeconds:5];
         [self waitForGoingFlagForSendButton];
         NSString *code2 = self.codeInputFeild.text;
-        checkUrl = [NSString stringWithFormat:@"http://toefl.etest.net.cn/en/SeatsQuery?__act=__id.22.SeatsQuery.adp.actList&whichFirst=AS&mvfAdminMonths=%@&mvfSiteProvinces=%@&afCalcResult=%@", self.userInfo.date, self.userInfo.province, code2];
+        checkUrl = [NSMutableString stringWithFormat:@"http://toefl.etest.net.cn/en/SeatsQuery?__act=__id.22.SeatsQuery.adp.actList&whichFirst=AS&afCalcResult=%@", code2];
+        for (NSString *dates in self.userInfo.date) {
+            if (![dates isEqualToString:@""]) {
+                [checkUrl appendString:[NSString stringWithFormat:@"&mvfAdminMonths=%@", dates]];
+            }
+        }
+        for (NSString *provinces in self.userInfo.province) {
+            if (![provinces isEqualToString:@""]) {
+                [checkUrl appendString:[NSString stringWithFormat:@"&mvfSiteProvinces=%@",provinces]];
+            }
+        }
+        NSLog(checkUrl);
         [simulateLogin requestToURLWithGet:checkUrl withHeaders:(NSDictionary*)headers];
         [self waitForGoingFlag];
     }while ([self checkIsVerifyCodeCorrect]);
     
+    NSLog(simulateLogin.dataInString);
     
     [self checkIsSeatAvailable];
     
@@ -296,9 +308,9 @@
 -(void)didFinishLoading:(SimulateLogin*)controller{
     goingFlag = YES;
     headers = simulateLogin.responseInDic;
-    //NSLog([simulateLogin.responseInDic descriptionInStringsFileFormat]);
-    //NSLog(simulateLogin.dataInString);
-    //NSLog(@"----------------------------------------------------------------------------");
+    NSLog([simulateLogin.responseInDic descriptionInStringsFileFormat]);
+    NSLog(simulateLogin.dataInString);
+    NSLog(@"----------------------------------------------------------------------------");
 }
 
 -(void)findWebsiteBusy:(SimulateLogin *)controller{

@@ -17,15 +17,13 @@
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
     return self;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     //userinfotoedit是这个view的属性，是userinfo类的，这个类包含一个属性叫userinfodic，里面有内容
     self.textFieldID.text       = self.UserInfoToEdit.neeaid;
     self.textFieldPassword.text = self.UserInfoToEdit.password;

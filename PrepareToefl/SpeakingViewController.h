@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Questions.h"
 #import <AVFoundation/AVFoundation.h>
+#import "ListeningChooseViewController.h"
 
 @interface SpeakingViewController : UIViewController <AVAudioPlayerDelegate>
 

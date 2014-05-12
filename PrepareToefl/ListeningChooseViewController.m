@@ -10,6 +10,9 @@
 
 @interface ListeningChooseViewController (){
     NSMutableArray *listeningFileArray;
+    NSString *filePath;
+    NSFileManager *fileManager;
+    
 }
 
 @end
@@ -52,14 +55,26 @@
 
 
 -(void) fileManagerController {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *typeOfFile = [[NSString alloc]init];
+    filePath = [[NSString alloc]init];
+    fileManager = [NSFileManager defaultManager];
+    
     NSError *error = nil;
-    NSString *filePath = [self documentsDirectory];
+    if (self.isSpeakingFiles) {
+        typeOfFile = @"caf";
+        filePath = [[self documentsDirectory] stringByAppendingPathComponent:@"Records"];
+    }
+    else {
+        typeOfFile = @"mp3";
+        filePath = [self documentsDirectory];
+    }
+    
+    //index set 用来记录不符合文件的index，然后去除
     NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc]init];
     listeningFileArray = [[NSMutableArray alloc]initWithArray:[fileManager contentsOfDirectoryAtPath:filePath error:&error]];
     
     for (int i = [listeningFileArray count] - 1; i >= 0; i --) {
-        if ([listeningFileArray[i] rangeOfString:@"mp3"].length <= 0) {
+        if ([listeningFileArray[i] rangeOfString:typeOfFile].length <= 0) {
             [indexSet addIndex:i];
         }
     }
@@ -100,6 +115,15 @@
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
 
     controller.fileName = listeningFileArray[indexPath.row];
+    controller.filePath = filePath; //将现在的录音文件夹传送到播放器界面中
+    
+}
+
+-(void)tableView:(UITableView *)tableView commitEditingStyle: (UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    [fileManager removeItemAtPath:[filePath stringByAppendingPathComponent:listeningFileArray[indexPath.row]] error:nil];
+    [listeningFileArray removeObjectAtIndex:indexPath.row];
+    NSArray *indexPaths = @[indexPath];
+    [tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 

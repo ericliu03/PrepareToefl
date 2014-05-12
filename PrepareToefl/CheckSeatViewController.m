@@ -26,27 +26,15 @@
 
 - (void)viewDidLoad
 {
-    
-
-
-    UserInfo *user1 = self.dataModel.users[0];
-
-    [self displayUserInfo:user1];
-//    NSString *displayText = [NSString stringWithFormat:@" ID:%@ \n Password:%@ \n Date:%@ \n Province:%@", user1.neeaid, user1.password, user1.date, user1.province];
-//    self.TextViewUserInfo.text = displayText;
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [super viewDidLoad];
+    
+    UserInfo *user1 = self.dataModel.users[0];
+    [self displayUserInfo:user1];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
@@ -56,18 +44,13 @@
     [self.delegate CheckSeatViewControllerDidCancel:self];
 }
 
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return indexPath;
-}
-
 #pragma mark -Naviagtion
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    
     if ([segue.identifier isEqualToString:@"InfoPutIn"]) {
         
         InfoPutInViewController *controller = (InfoPutInViewController*)segue.destinationViewController;
         controller.UserInfoToEdit = self.dataModel.users[0];
-        
         controller.delegate = self;
     }
     else if ([segue.identifier isEqualToString:@"GoCheck"]){
@@ -97,13 +80,14 @@
     }
     
     NSString *displayText = [NSString stringWithFormat:@" ID:%@ \n Password:%@ \n Date:%@ \n Province:%@", UserInfo.neeaid, UserInfo.password, dateToDisplay , provinceToDisplay];
+    
     self.TextViewUserInfo.text = displayText;
 }
 
 -(void)InfoPutInViewController:(InfoPutInViewController*)controller DidDone:(UserInfo*)UserInfo{
-    //NSLog([NSString stringWithFormat:@"%d",[self.dataModel.users count]]);
+
+    //传送来的userInfo存入文件
     [self.dataModel.users replaceObjectAtIndex:0 withObject:UserInfo];
-    //NSLog([NSString stringWithFormat:@"%d",[self.dataModel.users count]]);
     [self.dataModel saveUserInfo];
     //读取传送来的userInfo来填入文本框
     [self displayUserInfo:UserInfo];

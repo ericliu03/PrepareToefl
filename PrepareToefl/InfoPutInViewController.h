@@ -17,6 +17,7 @@
 
 @end
 
+
 @interface InfoPutInViewController : UITableViewController<UITextFieldDelegate>
 
 @property(nonatomic,weak) id <InfoPutInViewControllerDelegate> delegate;

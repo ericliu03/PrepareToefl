@@ -11,6 +11,7 @@
 @implementation SimulateLogin{
 }
 
+//因为是这个函数中使用的，所以要放在这里，在每次连接后查看是否繁忙并传回信息。
 -(BOOL) checkIsWebsiteBusy{
     NSString *matchString = [NSString stringWithFormat:@"F5"];
     NSError *error;

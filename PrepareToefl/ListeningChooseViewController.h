@@ -10,5 +10,5 @@
 #import "ListeningViewController.h"
 
 @interface ListeningChooseViewController : UITableViewController
-
+@property(nonatomic) BOOL isSpeakingFiles;
 @end

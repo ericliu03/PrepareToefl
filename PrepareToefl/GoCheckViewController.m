@@ -12,9 +12,10 @@
 
 @end
 
-@implementation GoCheckViewController{
-    NSThread *connectThread;
+@implementation GoCheckViewController {
+    
     SimulateLogin *simulateLogin;
+    NSThread *connectThread;
     NSDictionary *headers;
     BOOL goingFlag;
     BOOL goingFlagForSendButton;
@@ -23,9 +24,6 @@
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
     return self;
 }
 
@@ -60,8 +58,7 @@
     NSDate *datenow = [NSDate date];
     double timeStemp = [datenow timeIntervalSince1970];
     NSString *codeUrl = [NSString stringWithFormat:@"http://toefl.etest.net.cn/en/%10.16fVerifyCode3.jpg",timeStemp];
-    
-    //NSLog(codeUrl);
+
     return codeUrl;
 }
 
@@ -196,6 +193,7 @@
         [NSThread sleepForTimeInterval:0.1];
     }
 }
+
 //在wait函数中检测线程是否被终止
 -(void)waitForGoingFlag{
     while (!goingFlag)[self checkIfThreadTerminated];
@@ -203,8 +201,6 @@
 }
 
 -(void)waitForGoingFlagForSendButton{
-    //turn the keyboard on before waiting for send code
-    //[self performSelectorOnMainThread:@selector(textFieldBecomeResponser) withObject:nil waitUntilDone:NO];
     while (!goingFlagForSendButton)[self checkIfThreadTerminated];
     goingFlagForSendButton = NO;
 }
@@ -258,7 +254,6 @@
                                    inMethod:@"POST"
                                withHttpBody:postBodyForLogin];
         [self waitForGoingFlag];
-        NSLog(@"post iDID------------------------------------");
         [self checkIsIDAndPassCorrect];
     }while ([self checkIsVerifyCodeCorrect]);
 
@@ -292,12 +287,9 @@
                 [checkUrl appendString:[NSString stringWithFormat:@"&mvfSiteProvinces=%@",provinces]];
             }
         }
-        NSLog(checkUrl);
         [simulateLogin requestToURLWithGet:checkUrl withHeaders:(NSDictionary*)headers];
         [self waitForGoingFlag];
     }while ([self checkIsVerifyCodeCorrect]);
-    
-    NSLog(simulateLogin.dataInString);
     
     [self checkIsSeatAvailable];
     
@@ -308,9 +300,7 @@
 -(void)didFinishLoading:(SimulateLogin*)controller{
     goingFlag = YES;
     headers = simulateLogin.responseInDic;
-    NSLog([simulateLogin.responseInDic descriptionInStringsFileFormat]);
-    NSLog(simulateLogin.dataInString);
-    NSLog(@"----------------------------------------------------------------------------");
+
 }
 
 -(void)findWebsiteBusy:(SimulateLogin *)controller{

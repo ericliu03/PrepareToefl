@@ -30,6 +30,42 @@
     return self;
 }
 
+-(NSString*)documentsDirectory{
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths firstObject];
+    
+    return documentsDirectory;
+}
+
+-(NSString*)getPresentTime{
+    NSDate *now = [NSDate date];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+    [dateFormatter setDateFormat:@"yyMMdd hh:mm"];
+    NSString *strDate = [dateFormatter stringFromDate:now];
+    return strDate;
+}
+
+-(void)isRecordsFolderCreated {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *filePath = [[self documentsDirectory] stringByAppendingPathComponent:@"Records"];
+    if (![fileManager fileExistsAtPath:filePath]) {
+        [fileManager createDirectoryAtPath:filePath withIntermediateDirectories:NO attributes:nil error:nil];
+    }
+}
+
+-(NSURL*)getRecordedFile {
+    NSString *fileName = [NSString stringWithFormat:@"%@ %@", self.question.title, [self getPresentTime] ];
+    NSString *folderName = [[self documentsDirectory] stringByAppendingPathComponent:@"Records"];
+    [self isRecordsFolderCreated];
+    recordedFile = [NSURL fileURLWithPath:
+                    [folderName stringByAppendingString:
+                    [NSString stringWithFormat: @"//%@.%@",fileName,@"caf"]
+                    ]];
+
+    return recordedFile;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -43,9 +79,7 @@
     isRecording = NO;
     [self.replayButton setEnabled:NO];
     self.replayButton.titleLabel.alpha = 0.5;
-    recordedFile = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:
-                                           [NSString stringWithFormat: @"%@.%@",@"sampleRecording",@"caf"]
-                                           ]];
+
     
     AVAudioSession *session = [AVAudioSession sharedInstance];
     
@@ -66,17 +100,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
 #pragma for record delegate
 
 
@@ -90,10 +113,11 @@
     
     //If the app is note recording, we want to start recording, disable the play button, and make the record button say "STOP"
     
+
     
     if(!isRecording)
     {
-        
+        [self getRecordedFile];
         isRecording = YES;
         [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
         [self.replayButton setEnabled:NO];
@@ -118,6 +142,7 @@
         
         NSError *playerError;
         
+        //停止的时候建立当前录音的player用来快速回放
         player = [[AVAudioPlayer alloc] initWithContentsOfURL:recordedFile error:&playerError];
         
         if (player == nil)
@@ -195,4 +220,14 @@
 - (IBAction)ShowQ2:(id)sender {
     self.questionTextField.text = self.question.question2;
 }
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    
+    ListeningChooseViewController *controller = (ListeningChooseViewController*)segue.destinationViewController;
+    //controller.delegate = self;
+    controller.isSpeakingFiles = YES;
+    
+}
+
 @end

@@ -36,7 +36,7 @@
     self.fileNameLabel.text = self.fileName;
     
     
-    listeningFile = [NSURL fileURLWithPath:[self dataFilePath:self.fileName]];
+    listeningFile = [NSURL fileURLWithPath:[self.filePath stringByAppendingPathComponent:self.fileName]];
     
     AVAudioSession *session = [AVAudioSession sharedInstance];
     NSError *sessionError;
@@ -76,11 +76,6 @@
     NSString *documentsDirectory = [paths firstObject];
     
     return documentsDirectory;
-}
-
--(NSString*)dataFilePath:(NSString*)fileName{
-    
-    return [[self documentsDirectory]stringByAppendingPathComponent:fileName];
 }
 
 - (IBAction)Start:(id)sender {

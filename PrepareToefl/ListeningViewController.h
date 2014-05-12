@@ -22,4 +22,5 @@
 - (IBAction)touchCancel:(id)sender;
 
 @property (nonatomic, weak) NSString *fileName;
+@property (nonatomic, weak) NSString *filePath;
 @end
